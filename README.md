@@ -16,6 +16,15 @@ This plugin makes it possible to automatically syndicate your posts to [Medium](
 4. Grab the id from the JSON provided and save that to your [Environment Variables](https://en.wikipedia.org/wiki/Environment_variable) as MEDIUM_USER_ID.
 5. Copy `jekyll-crosspost-to-medium.rb` to your site’s `plugins` folder.
 
+## Publication Setup
+If you are going to publish your posts to a publication, we need the publication ID
+
+1. follow the same basic setup steps getting you Integration token and your user ID
+2. visit https://api.medium.com/v1/users/USERID/publications and fill in USERID with the user id you found in the basic Setup
+3. grab the id that matches your publication name and save that to your [Environment Variables](https://en.wikipedia.org/wiki/Environment_variable) as MEDIUM_PUBLICATION_ID.
+4. in _config.yml add publication: true under yout
+
+
 ## Installation
 
 This plugin can be installed in two ways:
