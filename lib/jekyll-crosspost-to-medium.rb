@@ -31,7 +31,7 @@ module Jekyll
 
       @settings = @site.config['jekyll-crosspost_to_medium'] || {}
       globally_enabled = if @settings.has_key? 'enabled' then @settings['enabled'] else true end
-      publication_enabled = if @settings.has_key? 'publication' then @settings['publication'] else false end
+      @publication_enabled = if @settings.has_key? 'publication' then @settings['publication'] else false end
       cache_dir = @settings['cache'] || @site.config['source'] + '/.jekyll-crosspost_to_medium'
       backdate = if @settings.has_key? 'backdate' then @settings['backdate'] else true end
       @crossposted_file = File.join(cache_dir, "medium_crossposted.yml")
@@ -40,19 +40,12 @@ module Jekyll
         # puts "Cross-posting enabled"
         user_id = ENV['MEDIUM_USER_ID'] or false
         token = ENV['MEDIUM_INTEGRATION_TOKEN'] or false
+        publication_id = ENV['MEDIUM_PUBLICATION_ID'] or false
 
-        if ! user_id or ! token
+        if ! user_id or ! token or ! publication_id
           raise ArgumentError, "MediumCrossPostGenerator: Environment variables not found"
           return
         end
-
-        if publication_enabled
-          publication_id = ENV['MEDIUM_PUBLICATION_ID'] or false
-
-          if ! publication_id
-            raise ArgumentError, "MediumCrossPostGenerator: You have enabled publication posting, but the publication enviroment variable was not found."
-            return
-          end
 
         if defined?(cache_dir)
           FileUtils.mkdir_p(cache_dir)
@@ -191,7 +184,7 @@ module Jekyll
 
     def crosspost_to_medium(payload)
 
-      if publication_enabled == true
+      if @publication_enabled == true
         publication_id = ENV['MEDIUM_PUBLICATION_ID'] or false
         token = ENV['MEDIUM_INTEGRATION_TOKEN'] or false
         medium_api = URI.parse("https://api.medium.com/v1/publications/#{publication_id}/posts")
@@ -220,6 +213,7 @@ module Jekyll
 
       if response.code == '201'
         medium_response = JSON.parse(response.body)
+        puts response.body
         puts "Posted '#{payload['title']}' to Medium as #{payload['publishStatus']} (#{medium_response['data']['url']})"
         return medium_response['data']['url']
       else
@@ -228,5 +222,5 @@ module Jekyll
       end
     end
 
-  end
+    end
 end
